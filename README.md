@@ -17,27 +17,27 @@ Inco's Splash for M1 and M2 Macs.
 
 ## Install
 
-Splash Launcher is installed by building it from source, which takes about a minute.
-
 1. **Install Splash-M1** by following the instructions at
    [paperniuk/splash](https://github.com/paperniuk/splash). Splash Launcher controls an
    existing installation and doesn't install Splash for you; if it can't find `splash-m1`, it
    says so and links to that page.
-2. **Have Apple's developer tools:** Xcode 15.3 or later, or the Command Line Tools
-   (`xcode-select --install`).
-3. **Clone, build and open:**
+2. **Get Splash Launcher**, either way:
+   - **Download** the zip from the
+     [latest release](https://github.com/alphaexposure/splash-launcher/releases/latest), unzip
+     it and move **Splash Launcher** to Applications. The app isn't notarised by Apple, so the
+     first time you open it macOS blocks it: open **System Settings → Privacy & Security** and
+     click **Open Anyway**. Each release is built by GitHub Actions from that version's source.
+   - **Or build it from source** with Xcode 15.3 or later, or the Command Line Tools
+     (`xcode-select --install`):
 
-   ```bash
-   git clone https://github.com/alphaexposure/splash-launcher.git
-   cd splash-launcher
-   zsh Scripts/build-app.zsh
-   open "dist/Splash Launcher.app"
-   ```
+     ```bash
+     git clone https://github.com/alphaexposure/splash-launcher.git
+     cd splash-launcher
+     zsh Scripts/build-app.zsh
+     open "dist/Splash Launcher.app"
+     ```
 
-4. **Optional:** drag `dist/Splash Launcher.app` into `/Applications` to keep it.
-
-To update later, run `git pull` and `zsh Scripts/build-app.zsh` again, then reopen the app
-(or drag the new build into `/Applications` again).
+     To update, run `git pull` and `zsh Scripts/build-app.zsh` again.
 
 ## How it fits together
 
@@ -88,6 +88,10 @@ Xcode, because the Command Line Tools don't include XCTest.
 ```bash
 swift test
 ```
+
+To publish a release, push a version tag such as `v0.2.0`. The
+[Release workflow](.github/workflows/release.yml) then runs the tests, builds the app with
+that version number, and attaches the zip and its SHA-256 checksum to a GitHub Release.
 
 ## How it behaves
 

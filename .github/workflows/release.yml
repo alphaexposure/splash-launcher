@@ -1,0 +1,52 @@
+name: Release
+
+# Push a version tag (for example v0.1.0) to build the app from that exact source on
+# GitHub's Mac, run the tests, and publish a GitHub Release with the zipped app.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the tag is a version
+        run: |
+          [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Tag must look like v1.2.3"; exit 1; }
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+
+      - name: Test
+        run: swift test
+
+      - name: Build the app
+        run: SPLASH_LAUNCHER_VERSION="$VERSION" SPLASH_LAUNCHER_BUILD="$GITHUB_RUN_NUMBER" zsh Scripts/build-app.zsh
+
+      - name: Zip and checksum
+        run: |
+          zip="Splash-Launcher-$VERSION.zip"
+          ditto -c -k --keepParent "dist/Splash Launcher.app" "$zip"
+          shasum -a 256 "$zip" > "$zip.sha256"
+          cat "$zip.sha256"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<NOTES
+          Built by GitHub Actions from this tag's source code. Requires an M1 or M2 Mac with
+          macOS 14 or later and [Splash-M1](https://github.com/paperniuk/splash) installed.
+
+          **Install:** unzip, move **Splash Launcher** to Applications and open it. The app isn't
+          notarised by Apple, so the first time macOS blocks it: open **System Settings → Privacy &
+          Security** and click **Open Anyway**. Verify the download against the \`.sha256\` file if
+          you like (\`shasum -a 256 -c Splash-Launcher-$VERSION.zip.sha256\`).
+          NOTES
+          gh release create "$GITHUB_REF_NAME" "Splash-Launcher-$VERSION.zip" "Splash-Launcher-$VERSION.zip.sha256" \
+            --title "Splash Launcher $VERSION" --notes-file notes.md --verify-tag

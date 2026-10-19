@@ -12,11 +12,15 @@ if [[ ! -s "$icon" || "$mark" -nt "$icon" || Scripts/make-icon/main.swift -nt "$
 fi
 swift build -c release --product SplashLauncher
 app='dist/Splash Launcher.app'
+# Release builds pass the version from the git tag; local builds use the default.
+version="${SPLASH_LAUNCHER_VERSION:-0.1.0}"
+build="${SPLASH_LAUNCHER_BUILD:-1}"
+[[ "$version" =~ '^[0-9]+\.[0-9]+\.[0-9]+$' && "$build" =~ '^[0-9]+$' ]] || { print -u2 "Invalid version or build number."; exit 1; }
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp Sources/SplashLauncher/Resources/Splash.icns "$app/Contents/Resources/Splash.icns"
 cp .build/release/SplashLauncher "$app/Contents/MacOS/SplashLauncher"
 cp -R .build/release/SplashLauncher_SplashLauncher.bundle "$app/Contents/Resources/"
-cat > "$app/Contents/Info.plist" <<'PLIST'
+cat > "$app/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
@@ -27,8 +31,8 @@ cat > "$app/Contents/Info.plist" <<'PLIST'
   <key>CFBundleIconFile</key><string>Splash.icns</string>
   <key>CFBundleName</key><string>Splash Launcher</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.1.0</string>
-  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundleShortVersionString</key><string>$version</string>
+  <key>CFBundleVersion</key><string>$build</string>
   <key>LSMinimumSystemVersion</key><string>14.0</string>
   <key>NSHighResolutionCapable</key><true/>
 </dict></plist>

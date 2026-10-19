@@ -8,9 +8,10 @@ private final class SplashAppCoordinator {
 
 final class SplashAppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        if let url = Bundle.module.url(forResource: "Splash", withExtension: "icns"),
-           let icon = NSImage(contentsOf: url) {
-            NSApp.applicationIconImage = icon
+        // A packaged .app already gets its icon from Contents/Resources. When run unpackaged
+        // (swift run), draw it from the shared mark instead of loading a resource file.
+        if Bundle.main.bundleURL.pathExtension != "app" {
+            NSApp.applicationIconImage = SplashMark.appIconImage()
         }
     }
 

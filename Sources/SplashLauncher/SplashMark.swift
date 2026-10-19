@@ -109,6 +109,15 @@ enum SplashMark {
         context.restoreGState()
     }
 
+    /// The app icon as an image, for runs outside a packaged .app.
+    static func appIconImage(size: CGFloat = 512) -> NSImage {
+        NSImage(size: NSSize(width: size, height: size), flipped: false) { _ in
+            guard let context = NSGraphicsContext.current?.cgContext else { return false }
+            drawAppIcon(in: context, size: size)
+            return true
+        }
+    }
+
     private static func drawVerticalGradient(_ context: CGContext, top: (CGFloat, CGFloat, CGFloat),
                                              bottom: (CGFloat, CGFloat, CGFloat), in rect: CGRect) {
         let colours = [CGColor(srgbRed: top.0, green: top.1, blue: top.2, alpha: 1),

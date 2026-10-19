@@ -35,6 +35,15 @@ jobs:
           shasum -a 256 "$zip" > "$zip.sha256"
           cat "$zip.sha256"
 
+      - name: Launch the downloaded app
+        run: |
+          # Unzip the actual download elsewhere and hide the build folder, so the app can't rely
+          # on files that only exist on the build machine.
+          mkdir -p launch-check
+          ditto -x -k "Splash-Launcher-$VERSION.zip" launch-check
+          mv .build .build-hidden
+          zsh Scripts/smoke-test-app.zsh "launch-check/Splash Launcher.app"
+
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}

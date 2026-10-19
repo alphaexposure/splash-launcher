@@ -7,7 +7,10 @@ let package = Package(
         .macOS(.v14),
     ],
     targets: [
-        .executableTarget(name: "SplashLauncher", resources: [.copy("Resources/Splash.icns")]),
+        // The icon file is packaged into the .app by Scripts/build-app.zsh, not as a SwiftPM
+        // resource: SwiftPM's resource-bundle lookup varies between Swift versions and crashed
+        // released builds.
+        .executableTarget(name: "SplashLauncher", exclude: ["Resources/Splash.icns"]),
         .testTarget(
             name: "SplashLauncherTests",
             dependencies: ["SplashLauncher"]

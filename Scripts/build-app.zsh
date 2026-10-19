@@ -16,10 +16,11 @@ app='dist/Splash Launcher.app'
 version="${SPLASH_LAUNCHER_VERSION:-0.1.0}"
 build="${SPLASH_LAUNCHER_BUILD:-1}"
 [[ "$version" =~ '^[0-9]+\.[0-9]+\.[0-9]+$' && "$build" =~ '^[0-9]+$' ]] || { print -u2 "Invalid version or build number."; exit 1; }
+# Start from an empty bundle so files from earlier builds can't linger in the app.
+rm -rf -- "dist/Splash Launcher.app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp Sources/SplashLauncher/Resources/Splash.icns "$app/Contents/Resources/Splash.icns"
 cp .build/release/SplashLauncher "$app/Contents/MacOS/SplashLauncher"
-cp -R .build/release/SplashLauncher_SplashLauncher.bundle "$app/Contents/Resources/"
 cat > "$app/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

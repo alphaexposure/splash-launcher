@@ -21,3 +21,11 @@ jobs:
         run: swift build
       - name: Test
         run: swift test
+      - name: Package the app
+        run: zsh Scripts/build-app.zsh
+      - name: Launch the packaged app
+        run: |
+          # Run a copy from another folder with the build folder hidden, as on a user's Mac.
+          ditto "dist/Splash Launcher.app" "launch-check/Splash Launcher.app"
+          mv .build .build-hidden
+          zsh Scripts/smoke-test-app.zsh "launch-check/Splash Launcher.app"

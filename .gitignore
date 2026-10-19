@@ -1,0 +1,6 @@
+.build/
+.DS_Store
+dist/
+
+# Local notes for AI coding agents; kept out of the public repo.
+AGENTS.md

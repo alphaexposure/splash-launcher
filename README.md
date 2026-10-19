@@ -15,6 +15,46 @@ Inco's Splash for M1 and M2 Macs.
   <img alt="Splash Launcher's Overview: the loaded model, server status, memory and token activity" src="docs/overview-light.png">
 </picture>
 
+## Install
+
+Splash Launcher is installed by building it from source, which takes about a minute.
+
+1. **Install Splash-M1** by following the instructions at
+   [paperniuk/splash](https://github.com/paperniuk/splash). Splash Launcher controls an
+   existing installation and doesn't install Splash for you; if it can't find `splash-m1`, it
+   says so and links to that page.
+2. **Have Apple's developer tools:** Xcode 15.3 or later, or the Command Line Tools
+   (`xcode-select --install`).
+3. **Clone, build and open:**
+
+   ```bash
+   git clone https://github.com/alphaexposure/splash-launcher.git
+   cd splash-launcher
+   zsh Scripts/build-app.zsh
+   open "dist/Splash Launcher.app"
+   ```
+
+4. **Optional:** drag `dist/Splash Launcher.app` into `/Applications` to keep it.
+
+To update later, run `git pull` and `zsh Scripts/build-app.zsh` again, then reopen the app
+(or drag the new build into `/Applications` again).
+
+## How it fits together
+
+```mermaid
+flowchart LR
+    splash["Splash<br/>by Inco AI<br/>M3 or newer Macs"] -- "ported to M1/M2 by<br/>the community" --> m1["Splash-M1<br/>paperniuk/splash"]
+    m1 -. "you install it" .-> server
+    subgraph mac["Your M1/M2 Mac"]
+        launcher["Splash Launcher<br/>this app"] -- "starts, stops,<br/>reads status and logs" --> server["splash-m1 server<br/>127.0.0.1:8000"]
+        clients["Chat apps and tools<br/>Splash's web chat, Open WebUI,<br/>coding agents"] -- "OpenAI / Anthropic API" --> server
+    end
+```
+
+Splash Launcher doesn't run models itself and isn't in the path of your chats: apps talk to
+the Splash-M1 server directly, while the launcher starts and stops it and shows what it's
+doing.
+
 ## Features
 
 - **Start, stop and restart** Splash with one click, and open its web chat page.
@@ -39,11 +79,6 @@ Inco's Splash for M1 and M2 Macs.
 
 ## Requirements
 
-**Install Splash-M1 first,** following the instructions at
-[paperniuk/splash](https://github.com/paperniuk/splash). Splash Launcher controls an existing
-installation and doesn't install Splash for you. If it can't find `splash-m1`, it says so and
-links to that page.
-
 - macOS 14 or later on an M1 or M2 Mac.
 - An existing Splash-M1 installation ([paperniuk/splash](https://github.com/paperniuk/splash)).
   The launcher looks for `splash-m1` in
@@ -52,18 +87,12 @@ links to that page.
   executable in Settings, but it hasn't been tested.
 - To build: Xcode 15.3+ or a Swift 5.10+ toolchain.
 
-## Build and run
-
-```bash
-git clone https://github.com/alphaexposure/splash-launcher.git
-cd splash-launcher
-zsh Scripts/build-app.zsh
-open "dist/Splash Launcher.app"
-```
+## Development
 
 `Scripts/build-app.zsh` builds a release binary and packages it as
 `dist/Splash Launcher.app`, ad-hoc signed for local use. `swift build` and `swift test`
-compile and test the code but don't update the app bundle.
+compile and test the code but don't update the app bundle. Running the tests needs full
+Xcode, because the Command Line Tools don't include XCTest.
 
 ```bash
 swift test

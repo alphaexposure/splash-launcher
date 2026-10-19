@@ -41,19 +41,10 @@ To update later, run `git pull` and `zsh Scripts/build-app.zsh` again, then reop
 
 ## How it fits together
 
-```mermaid
-flowchart LR
-    splash["Splash<br/>by Inco AI<br/>M3 or newer Macs"] -- "ported to M1/M2 by<br/>the community" --> m1["Splash-M1<br/>paperniuk/splash"]
-    m1 -. "you install it" .-> server
-    subgraph mac["Your M1/M2 Mac"]
-        launcher["Splash Launcher<br/>this app"] -- "starts, stops,<br/>reads status and logs" --> server["splash-m1 server<br/>127.0.0.1:8000"]
-        clients["Chat apps and tools<br/>Splash's web chat, Open WebUI,<br/>coding agents"] -- "OpenAI / Anthropic API" --> server
-    end
-```
-
-Splash Launcher doesn't run models itself and isn't in the path of your chats: apps talk to
-the Splash-M1 server directly, while the launcher starts and stops it and shows what it's
-doing.
+- **Splash** is Inco AI's local inference engine for M3 and newer Macs.
+- **Splash-M1** is a community port of Splash for M1 and M2 Macs. You install it separately.
+- **Splash Launcher** (this app) starts, stops and monitors Splash-M1. It doesn't run models
+  itself, and your chat apps talk to the Splash-M1 server directly, not through the launcher.
 
 ## Features
 

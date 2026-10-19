@@ -24,6 +24,7 @@ struct SettingsPage: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            MissingSplashNotice(controller: controller)
             if controller.state.isRunning {
                 Notice("Stop Splash to edit server settings. Changes apply on the next start.", symbol: "lock")
             }
@@ -34,7 +35,7 @@ struct SettingsPage: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
-                    Button("Choose…") { chooseExecutable() }
+                    Button("Choose…") { chooseSplashExecutable(for: controller) }
                         .disabled(controller.state.isRunning)
                 }
                 VStack(alignment: .leading, spacing: 10) {
@@ -250,16 +251,6 @@ struct SettingsPage: View {
 
     private func splitList(_ text: String) -> [String] {
         text.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-    }
-
-    private func chooseExecutable() {
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = false
-        panel.canChooseFiles = true
-        panel.allowsMultipleSelection = false
-        panel.showsHiddenFiles = true
-        panel.prompt = "Use Executable"
-        if panel.runModal() == .OK, let url = panel.url { controller.selectExecutable(path: url.path) }
     }
 
     private var isLocked: Bool { controller.state.isRunning }

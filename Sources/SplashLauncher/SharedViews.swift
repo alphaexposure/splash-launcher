@@ -178,3 +178,51 @@ struct SettingHelpIcon: View {
         }
     }
 }
+
+/// Where to get Splash-M1. The launcher links to it but never installs Splash itself.
+enum SplashLinks {
+    static let splashM1 = URL(string: "https://github.com/paperniuk/splash")!
+}
+
+/// Lets the user pick the splash-m1 executable when automatic discovery didn't find it.
+@MainActor
+func chooseSplashExecutable(for controller: SplashProcessController) {
+    let panel = NSOpenPanel()
+    panel.canChooseDirectories = false
+    panel.canChooseFiles = true
+    panel.allowsMultipleSelection = false
+    panel.showsHiddenFiles = true
+    panel.prompt = "Use Executable"
+    if panel.runModal() == .OK, let url = panel.url { controller.selectExecutable(path: url.path) }
+}
+
+/// Shown while no Splash executable is found: explains why Start is unavailable and where
+/// to get Splash-M1.
+struct MissingSplashNotice: View {
+    @ObservedObject var controller: SplashProcessController
+
+    var body: some View {
+        if !controller.hasExecutable {
+            VStack(alignment: .leading, spacing: 12) {
+                Label("Splash-M1 isn't installed", systemImage: "exclamationmark.triangle")
+                    .font(.headline)
+                Text("Splash Launcher controls an existing Splash-M1 installation and doesn't install it for you. "
+                     + "Install Splash-M1, then reopen the launcher, or choose its splash-m1 executable if it's somewhere else.")
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack {
+                    Link(destination: SplashLinks.splashM1) {
+                        Label("Get Splash-M1", systemImage: "arrow.up.right.square")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(SplashTheme.accentFill)
+                    Button("Choose executable…") { chooseSplashExecutable(for: controller) }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(18)
+            .background(SplashTheme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(SplashTheme.accent.opacity(0.35), lineWidth: 1))
+        }
+    }
+}

@@ -39,6 +39,11 @@ Inco's Splash for M1 and M2 Macs.
 
 ## Requirements
 
+**Install Splash-M1 first,** following the instructions at
+[paperniuk/splash](https://github.com/paperniuk/splash). Splash Launcher controls an existing
+installation and doesn't install Splash for you. If it can't find `splash-m1`, it says so and
+links to that page.
+
 - macOS 14 or later on an M1 or M2 Mac.
 - An existing Splash-M1 installation ([paperniuk/splash](https://github.com/paperniuk/splash)).
   The launcher looks for `splash-m1` in

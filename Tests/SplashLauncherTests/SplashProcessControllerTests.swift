@@ -329,6 +329,31 @@ final class SplashProcessControllerTests: XCTestCase {
         XCTAssertFalse(controller.logs.contains("secret"))
     }
 
+    func testMissingSplashNoticeShowsUntilAValidExecutableIsChosen() throws {
+        let controller = SplashProcessController(configuration: SplashConfiguration(), executable: nil,
+                                                 runProcess: { _ in 1 }, keyStore: FakeKeyStore())
+        XCTAssertFalse(controller.hasExecutable, "notice shows: nothing found")
+        controller.start()
+        XCTAssertEqual(controller.launchErrorMessage, "No Splash executable found.")
+
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let notExecutable = folder.appendingPathComponent("readme.txt")
+        try Data("not a program".utf8).write(to: notExecutable)
+        controller.selectExecutable(path: notExecutable.path)
+        XCTAssertFalse(controller.hasExecutable, "notice still shows after an invalid choice")
+        XCTAssertEqual(controller.launchErrorMessage, "Selected file is not executable.")
+
+        let executable = folder.appendingPathComponent("splash-m1")
+        try Data("#!/bin/sh\n".utf8).write(to: executable)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: executable.path)
+        controller.selectExecutable(path: executable.path)
+        XCTAssertTrue(controller.hasExecutable, "notice hides once a valid executable is chosen")
+        XCTAssertNil(controller.launchErrorMessage)
+        XCTAssertEqual(SplashLinks.splashM1.absoluteString, "https://github.com/paperniuk/splash")
+    }
+
     func testLatestRequestIsReadFromLogLinesSplitAcrossReads() {
         let controller = makeController(runProcess: { _ in 1 }, stopProcess: { _ in },
                                         keyStore: FakeKeyStore(key: "secret"))

@@ -30,6 +30,7 @@ struct OverviewPage: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            MissingSplashNotice(controller: controller)
             Panel("Server", symbol: "power") {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 8) {
